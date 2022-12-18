@@ -8,7 +8,6 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
-  Serial.println("Adafruit Fingerprint sensor enrollment");
 
   // set the data rate for the sensor serial port
   finger.begin(57600);
@@ -23,19 +22,18 @@ void setup() {
 
   // Verify the password for the fingerprint sensor
   if (finger.verifyPassword()) {
-    Serial.println("Verified password for fingerprint sensor");
+    Serial.println("Verified password for sensor");
   } else {
-    Serial.println("Error verifying password for fingerprint sensor");
+    Serial.println("Error verifying password for sensor");
     while (1) { delay(1); }
   }
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
   // Enroll a new fingerprint
   Serial.println("Place a finger on the sensor");
-  delay(500);  // Add a delay of 500 milliseconds
+  delay(100);  // Add a delay of 500 milliseconds
+  
   int p = finger.getImage();
   if(p == FINGERPRINT_NOFINGER){
     return;
@@ -45,7 +43,7 @@ void loop() {
     delay(500);
     } else {
     Serial.println("Image taken");
-    delay(500);  // Add a delay of 500 milliseconds
+    delay(1000);  // Add a delay of 500 milliseconds
 
     // Convert the image to a template
     p = finger.image2Tz();
@@ -55,20 +53,21 @@ void loop() {
       return;
     }
 
-    Serial.println("Image converted");
+    //image successfully converted, showing checking message
+    Serial.println("Checking...");
     delay(500);  // Add a delay of 500 milliseconds
 
     // Check if the fingerprint already exists in the database
     p = finger.fingerFastSearch();
     if (p == FINGERPRINT_OK) {
-      Serial.println("Fingerprint already exists in the database");
-      delay(3000);
+      Serial.println("You have already voted.");
+      delay(5000);
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
       Serial.println("Communication error");
       return;
     } else if (p == FINGERPRINT_NOTFOUND) {
-      Serial.println("Fingerprint not found in the database");
-      delay(500);  // Add a delay of 500 milliseconds
+      Serial.println("You can vote.");
+      delay(1000);  // Add a delay of 500 milliseconds
 
       // Store the fingerprint in the database
       p = finger.storeModel(finger.fingerID);
@@ -78,8 +77,8 @@ void loop() {
         return;
       }
 
-      Serial.println("Fingerprint stored successfully");
-      delay(2000);
+      Serial.println("Fingerprint stored successfully.");
+      delay(5000);
     }
   }
 }
