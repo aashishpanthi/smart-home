@@ -1,13 +1,19 @@
 #include <Adafruit_Fingerprint.h>
+#include <LiquidCrystal.h>
 
-// Replace these with the correct serial port and baud rate for your hardware:
 SoftwareSerial mySerial(2, 3); // RX, TX
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+
+// Set up the LCD display
+const int rs = 12, en = 11, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 void setup() {
   Serial.begin(9600);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
+
+  lcd.begin(16, 2);  // Initialize a 16x2 LCD display
 
   // set the data rate for the sensor serial port
   finger.begin(57600);
@@ -31,7 +37,7 @@ void setup() {
 
 void loop() {
   // Enroll a new fingerprint
-  Serial.println("Place a finger on the sensor");
+  lcd.println("Place a finger on the sensor");
   delay(100);  // Add a delay of 500 milliseconds
   
   int p = finger.getImage();
