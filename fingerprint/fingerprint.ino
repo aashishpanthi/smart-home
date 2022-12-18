@@ -8,6 +8,9 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 const int rs = 12, en = 11, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+// buzzer pin
+int buzzer = 8;
+
 void setup() {
   Serial.begin(9600);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
@@ -66,8 +69,11 @@ void loop() {
     // Check if the fingerprint already exists in the database
     p = finger.fingerFastSearch();
     if (p == FINGERPRINT_OK) {
+      tone(buzzer, 450);
       Serial.println("You have already voted.");
-      delay(5000);
+      delay(1500);
+      noTone(buzzer);
+      delay(2500);
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
       Serial.println("Communication error");
       return;
