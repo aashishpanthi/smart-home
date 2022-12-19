@@ -5,16 +5,18 @@ SoftwareSerial mySerial(2, 3); // RX, TX
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 // Set up the LCD display
-const int rs = 12, en = 11, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
+const int rs = 12, en = 11, d4 = 10, d5 = 9, d6 = 8, d7 = 7, v0=13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 // buzzer pin
-int buzzer = 8;
+int buzzer = 5;
 
 void setup() {
   Serial.begin(9600);
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
+
+  analogWrite(v0,10);
 
   lcd.begin(16, 2);  // Initialize a 16x2 LCD display
 
@@ -26,7 +28,9 @@ void setup() {
     Serial.println("Found fingerprint sensor!");
   } else {
     Serial.println("Did not find fingerprint sensor :(");
-    while (1) { delay(1); }
+    while (1) {
+      delay(1);
+    }
   }
 
   // Verify the password for the fingerprint sensor
@@ -34,25 +38,31 @@ void setup() {
     Serial.println("Verified password for sensor");
   } else {
     Serial.println("Error verifying password for sensor");
-    while (1) { delay(1); }
+    while (1) {
+      delay(1);
+    }
   }
 }
 
 void loop() {
   // Enroll a new fingerprint
-  lcd.println("Place a finger on the sensor");
-  delay(100);  // Add a delay of 500 milliseconds
+
+  delay(600);  // Add a delay of 600 milliseconds
+  lcd.clear();
+  lcd.println("Place a finger.");
   
+
   int p = finger.getImage();
-  if(p == FINGERPRINT_NOFINGER){
+  if (p == FINGERPRINT_NOFINGER) {
     return;
   }
   else if (p != FINGERPRINT_OK) {
-    Serial.println("Error taking fingerprint image");
+    lcd.clear();
+    lcd.println("Error taking fingerprint");
     delay(500);
-    } else {
-    Serial.println("Image taken");
-    delay(1000);  // Add a delay of 500 milliseconds
+  } else {
+    Serial.println("Fingerprint taken");
+    delay(800);  // Add a delay of 800 milliseconds
 
     // Convert the image to a template
     p = finger.image2Tz();
@@ -63,22 +73,37 @@ void loop() {
     }
 
     //image successfully converted, showing checking message
-    Serial.println("Checking...");
+    lcd.clear();
+    lcd.println("Checking...");
     delay(500);  // Add a delay of 500 milliseconds
 
     // Check if the fingerprint already exists in the database
     p = finger.fingerFastSearch();
     if (p == FINGERPRINT_OK) {
       tone(buzzer, 450);
-      Serial.println("You have already voted.");
-      delay(1500);
+      Serial.println("Already voted.");
+      lcd.clear();
+      lcd.print("Already voted.");
+      delay(500);
       noTone(buzzer);
-      delay(2500);
+      delay(200);
+      tone(buzzer, 450);
+      delay(500);
+      noTone(buzzer);
+      delay(200);
+      tone(buzzer, 450);
+      delay(1000);
+      noTone(buzzer);
+      delay(1000);
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+      lcd.clear();
+      lcd.println("Communication error.");
       Serial.println("Communication error");
       return;
     } else if (p == FINGERPRINT_NOTFOUND) {
-      Serial.println("You can vote.");
+      Serial.println("New voter.");
+      lcd.clear();
+      lcd.println("You can vote.");
       delay(1000);  // Add a delay of 500 milliseconds
 
       // Store the fingerprint in the database
@@ -89,8 +114,8 @@ void loop() {
         return;
       }
 
-      Serial.println("Fingerprint stored successfully.");
-      delay(5000);
+      Serial.println("Fingerprint stored.");
+      delay(3000);
     }
   }
 }
