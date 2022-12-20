@@ -19,7 +19,7 @@ void setup() {
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
 
-  analogWrite(v0,10);
+  analogWrite(v0,50);
 
   lcd.begin(16, 2);  // Initialize a 16x2 LCD display
 
@@ -118,8 +118,10 @@ void loop() {
       lcd.clear();
       lcd.println("You can vote.");
       digitalWrite(greenLED, HIGH);
-      delay(1000);  // Add a delay of 500 milliseconds
-
+      tone(buzzer, 450);
+      delay(1000);  // Add a delay of 1000 milliseconds
+      noTone(buzzer);
+      
       // Store the fingerprint in the database
       p = finger.storeModel(finger.fingerID);
       if (p != FINGERPRINT_OK) {
