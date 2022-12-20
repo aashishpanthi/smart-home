@@ -9,7 +9,10 @@ const int rs = 12, en = 11, d4 = 10, d5 = 9, d6 = 8, d7 = 7, v0=13;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 // buzzer pin
-int buzzer = 5;
+int buzzer = 6;
+
+// lEDs
+const int redLED = 5, greenLED = 4;
 
 void setup() {
   Serial.begin(9600);
@@ -19,6 +22,10 @@ void setup() {
   analogWrite(v0,10);
 
   lcd.begin(16, 2);  // Initialize a 16x2 LCD display
+
+  // setup for LED
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
 
   // set the data rate for the sensor serial port
   finger.begin(57600);
@@ -82,19 +89,25 @@ void loop() {
     if (p == FINGERPRINT_OK) {
       tone(buzzer, 450);
       Serial.println("Already voted.");
+      digitalWrite(redLED, HIGH);
       lcd.clear();
       lcd.print("Already voted.");
       delay(500);
       noTone(buzzer);
+      digitalWrite(redLED, LOW);
       delay(200);
       tone(buzzer, 450);
+      digitalWrite(redLED, HIGH);
       delay(500);
       noTone(buzzer);
+      digitalWrite(redLED, LOW);
       delay(200);
       tone(buzzer, 450);
+      digitalWrite(redLED, HIGH);
       delay(1000);
       noTone(buzzer);
       delay(1000);
+      digitalWrite(redLED, LOW);
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
       lcd.clear();
       lcd.println("Communication error.");
@@ -104,6 +117,7 @@ void loop() {
       Serial.println("New voter.");
       lcd.clear();
       lcd.println("You can vote.");
+      digitalWrite(greenLED, HIGH);
       delay(1000);  // Add a delay of 500 milliseconds
 
       // Store the fingerprint in the database
@@ -114,8 +128,10 @@ void loop() {
         return;
       }
 
+      
       Serial.println("Fingerprint stored.");
       delay(3000);
+      digitalWrite(greenLED, LOW);
     }
   }
 }
