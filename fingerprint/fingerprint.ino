@@ -19,7 +19,7 @@ void setup() {
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
 
-  analogWrite(v0,50);
+  analogWrite(v0,5);
 
   lcd.begin(16, 2);  // Initialize a 16x2 LCD display
 
@@ -56,7 +56,7 @@ void loop() {
 
   delay(600);  // Add a delay of 600 milliseconds
   lcd.clear();
-  lcd.println("Place a finger.");
+  lcd.print("Place your thumb.");
   
 
   int p = finger.getImage();
@@ -65,11 +65,11 @@ void loop() {
   }
   else if (p != FINGERPRINT_OK) {
     lcd.clear();
-    lcd.println("Error taking fingerprint");
+    lcd.print("Error taking fingerprint");
     delay(500);
   } else {
     Serial.println("Fingerprint taken");
-    delay(800);  // Add a delay of 800 milliseconds
+    delay(300);  // Add a delay of 800 milliseconds
 
     // Convert the image to a template
     p = finger.image2Tz();
@@ -81,7 +81,7 @@ void loop() {
 
     //image successfully converted, showing checking message
     lcd.clear();
-    lcd.println("Checking...");
+    lcd.print("Checking...");
     delay(500);  // Add a delay of 500 milliseconds
 
     // Check if the fingerprint already exists in the database
@@ -106,17 +106,17 @@ void loop() {
       digitalWrite(redLED, HIGH);
       delay(1000);
       noTone(buzzer);
-      delay(1000);
+      delay(500);
       digitalWrite(redLED, LOW);
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
       lcd.clear();
-      lcd.println("Communication error.");
+      lcd.print("Communication error.");
       Serial.println("Communication error");
       return;
     } else if (p == FINGERPRINT_NOTFOUND) {
       Serial.println("New voter.");
       lcd.clear();
-      lcd.println("You can vote.");
+      lcd.print("You can vote.");
       digitalWrite(greenLED, HIGH);
       tone(buzzer, 450);
       delay(1000);  // Add a delay of 1000 milliseconds
@@ -132,7 +132,7 @@ void loop() {
 
       
       Serial.println("Fingerprint stored.");
-      delay(3000);
+      delay(1000);
       digitalWrite(greenLED, LOW);
     }
   }
